@@ -7,6 +7,9 @@ Mini-projeto avaliativo módulo 1 - semana 07
 
 ## Atividades  
 
+Seguir as instruções do arquivo [Mini projeto](./mini_projeto.md).  
+
+
 ### Sprint 1 
 
 Versão do python utilizada: Python 3.8.10   
@@ -25,3 +28,9 @@ Sprint 1 (Importação dos dados): Realização da importação dos dados na pla
     - [x] instalar pandas: pip3 install pandas
     - [x] freeze nas dependencias - aumentar a segurança contra chain attack: pip3 freeze > requirements.txt
     - [x] adicionado pasta Miniprojeto ao gitignore
+
+
+## Sprint 2  
+
+Sprint 2 (Transformação de Strings, Integer e Float e Datetime): Desenvolvimento das funções de limpeza de texto, inteiros e decimais usando métodos e expressões regulares.
+
