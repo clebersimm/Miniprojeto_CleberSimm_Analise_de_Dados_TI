@@ -1,10 +1,12 @@
 # 1 - carregar os dados, mostrando número de registros, colunas e tipos de dados
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Constantes
 DADOS_INVALIDOS = "DADOS_INVALIDOS"
 ESTADO_CIVIL_VALIDO = {1:"Casado ou União Estável", 2:"Divorciado", 3:"Separado", 4:"Solteiro", 5:"Viúvo"}
+NOME_BASE_DADOS_LIMPA = 'database/base_limpa.csv'
 
 # Inicio das funções utilitárias
 # Sprint 1 - Importação de dados
@@ -54,20 +56,23 @@ def transforma_campos_tipo_data(dados, coluna):
 # Sprint 2 - Transformação dos dados - verificar e limpar strings (remover espaços em branco, caracteres especiais, etc.)
 def verificar_limpar_strings(dados, colunas):
     print(f'\n------Verificando as colunas {colunas}, são valores string,para limpeza e normalização dos dados------')
+    total_registros_invalidos = 0
     for coluna in colunas:
         print(f'\n--> Verificando e Limpando Strings na coluna "{coluna}"')
         if coluna in dados.columns and dados[coluna].dtype == 'object':
             dados[coluna] = dados[coluna].astype(str).str.strip().str.upper()  # Remove espaços em branco e converte para maiúsculas
             # função que verifica se existem caracteres especiais na coluna e os remove
-            # substitui por string DADOS_INVALIDOS para facilitar a identificação de registros com problemas
+            # remove a linha inteira do dataframe e contabiliza os registros inválidos
             if dados[coluna].str.contains(r'[^\w\s]', regex=True).any():
-                print(f"---> Atenção: A coluna '{coluna}' contém caracteres especiais. Marcando os dados inválidos.<---")
-            dados[coluna] = dados[coluna].str.replace(r'[^\w\s]', DADOS_INVALIDOS, regex=True)  # Remove caracteres especiais
+                print(f"---> Atenção: A coluna '{coluna}' contém caracteres especiais. Removendo os registros inválidos.<---")
+                total_invalidos = dados[coluna].str.contains(r'[^\w\s]', regex=True).sum()
+                total_registros_invalidos += total_invalidos
+                dados = dados[~dados[coluna].str.contains(r'[^\w\s]', regex=True)]
             print(f"--> Coluna '{coluna}' limpa com sucesso.")
         else:
             print(f"--> Coluna '{coluna}' não encontrada ou não é do tipo string.")
     print(f'\n------Fim da verificação e limpeza das colunas {colunas}------')
-    return dados
+    return dados, total_registros_invalidos
 
 # Sprint 2 - Transformação dos dados - verificar e limpar inteiros (remover valores inválidos)
 def verificar_limpar_inteiros(dados, colunas):
@@ -155,21 +160,84 @@ def verificar_e_tratar_campo_estado_civil(dados):
 # Sprint 3 - Limpeza dos dados - categoria
 def verificar_e_tratar_campo_marcados_como_invalidos(dados):
     print('\n------Verificando Valores do campo marcados como inválidos------')
-    
+
 
 # Fim das funções de limpeza dos dados
+
+
+# Sprint 4 (Estatística Descritiva)
+
+# Analise da coluna número de filhos
+def analise_coluna_numero_filhos(dados):
+    print('\n------Análise da coluna número de filhos------')
+    coluna_filho = 'CL_FHL'
+    if coluna_filho not in dados.columns:
+        print(f"--> Coluna '{coluna_filho}' não encontrada para análise.")
+        return None
+    #print(dados.groupby('CL_ID')[coluna_filho].value_counts()) - tratar estes dados de filho, pois não faz sentido
+    #contador_filhos = dados[coluna_filho].count()
+    media_filhos = dados[coluna_filho].mean()
+    mediana_filhos = dados[coluna_filho].median()
+    moda_filhos = dados[coluna_filho].mode()[0]
+    minimo_filhos = dados[coluna_filho].min()
+    maximo_filhos = dados[coluna_filho].max()
+    quartil_25_filhos = dados[coluna_filho].quantile(0.25)
+    quartil_75_filhos = dados[coluna_filho].quantile(0.75)
+    analise_filhos = {
+     #   "contador": contador_filhos,
+        "media": media_filhos,
+        "mediana": mediana_filhos,
+        "moda": moda_filhos,
+        "minimo": minimo_filhos,
+        "maximo": maximo_filhos,
+        "quartil_25": quartil_25_filhos,
+        "quartil_75": quartil_75_filhos
+    }
+    
+    return analise_filhos
+
+
+# Sprint 4 - Estatística Descritiva
+def analise_agrupamento_genero_categoria_compra(dados):
+    print('--> Agrupamento de genero e categoria de compra')
+    agrupado = dados.groupby(['CL_GENERO', 'PR_CAT']).size().reset_index(name='Quantidade_Comprada')
+    tabela_pivot = agrupado.pivot(index='PR_CAT', columns='CL_GENERO', values='Quantidade_Comprada').fillna(0)
+    fig, ax = plt.subplots(figsize=(10, 6))
+    tabela_pivot.plot(kind='bar', ax=ax, width=0.8)
+    plt.title('Quantidade Comprada por Categoria e Gênero', fontsize=14, pad=15)
+    plt.xlabel('Categoria do Produto', fontsize=12)
+    plt.ylabel('Quantidade Comprada', fontsize=12)
+    plt.xticks(rotation=45, ha='right') 
+    plt.legend(title='Gênero', labels=['Feminino (F)', 'Masculino (M)'])
+    plt.tight_layout()
+    plt.savefig('grafico_genero_categoria.png')
+
+def analise_agrupamento_itens_por_nota(dados):
+    print('--> Agrupamento de itens por nota')
+    itens_por_nota = dados.groupby('CO_ID').size().reset_index(name='Qtd_Itens')
+    print(itens_por_nota.describe())
+    
+def analise_agrupamento_top_produtos(dados):
+    print('--> Agrupamento dos produtos mais comprados')
+    top_produtos = dados.groupby('PR_NOME').size().reset_index(name='Quantidade')
+    top_10 = top_produtos.sort_values(by='Quantidade', ascending=True).head(10)
+    print('--> Top 10 produtos mais comprados')
+    print(top_10)
+
 
 def executar_tarefas_de_transformacao(dados):
     print("\n-> Iniciando tarefas de transformação dos dados...")
     dados = transforma_campos_tipo_data(dados, 'DATA')
-    dados = verificar_limpar_strings(dados, ['CL_GENERO', 'CL_SEG','PR_CAT','PR_NOME'])
+    dados, total_registros_invalidos = verificar_limpar_strings(dados, ['CL_GENERO', 'CL_SEG','PR_CAT','PR_NOME'])
     dados, total_registros_alterados = verificar_limpar_inteiros(dados, ['CO_ID','CL_ID','CL_EC','CL_FHL','PR_ID'])
     print("\n-> Tarefas de transformação dos dados concluídas!")
     print('-----Sumário da execução das tarefas de transformação dos dados-----')
     print('-> Coluna "DATA" transformada para tipo datetime.')
     print('-> Colunas "CL_GENERO", "CL_SEG", "PR_CAT" e "PR_NOME" limpas de espaços em branco e caracteres especiais, convertidas para maiúsculas.')
+    print(f'-> Total de registros removidos durante a verificação e limpeza de strings: {total_registros_invalidos}')
     print('-> Colunas "CO_ID", "CL_ID", "CL_EC", "CL_FHL" e "PR_ID" verificadas e limpas de valores não numéricos, marcados como NaN quando encontrados.')
     print(f'-> Total de registros alterados durante a verificação e limpeza de inteiros: {total_registros_alterados}')
+
     print('--------------------------------------------------------------------')
     return dados
 
@@ -182,9 +250,18 @@ def executar_tarefas_de_limpeza(dados):
     # deixar para depois
     #dados = verificar_e_tratar_campo_estado_civil(dados)
     #dados = verificar_e_tratar_valores_discrepantes(dados)
-    #print("\n-> Tarefas de limpeza dos dados concluídas!")
+    print("\n-> Tarefas de limpeza dos dados concluídas!")
     return dados
 
+def executar_tarefas_analise():
+    print("\n-> Iniciando tarefas de análise dos dados...")
+    dados_limpos = carregar_dados_de_csv(NOME_BASE_DADOS_LIMPA)
+    resultado_analise_coluna_filhos = analise_coluna_numero_filhos(dados_limpos)
+    #print(f"\n-> Resultado da análise da coluna número de filhos: {resultado_analise_coluna_filhos}")
+    analise_agrupamento_genero_categoria_compra(dados_limpos)
+    analise_agrupamento_itens_por_nota(dados_limpos)
+    analise_agrupamento_top_produtos(dados_limpos)
+    print("\n-> Tarefas de análise dos dados concluídas!")
 # Método de inicialização do programa
 # Utilizado para chamar as funções de carregamento de dados, transformação e limpeza
 def main():
@@ -193,11 +270,14 @@ def main():
     if dados is None:
         print("Falha ao carregar os dados.")
     else:
-        print("-> Dados carregados com sucesso! Iniciando processos...")        
-        apresentar_informacoes_dados(dados, "dados após o carregamento")
-        dados = executar_tarefas_de_transformacao(dados)
-        apresentar_informacoes_dados(dados, "dados após a transformação")
-        dados = executar_tarefas_de_limpeza(dados)  
+        #print("-> Dados carregados com sucesso! Iniciando processos...")        
+        #apresentar_informacoes_dados(dados, "dados após o carregamento")
+        #dados = executar_tarefas_de_transformacao(dados)
+        #apresentar_informacoes_dados(dados, "dados após a transformação")
+        #dados = executar_tarefas_de_limpeza(dados)
+        #criar_arquivo_csv(NOME_BASE_DADOS_LIMPA, dados)
+        #del dados
+        executar_tarefas_analise()
         #apresentar_informacoes_dados(dados, "dados após a limpeza")
 
 if __name__ == "__main__":
