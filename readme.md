@@ -185,3 +185,11 @@ Obs: Os insights são relacionados aos dados apresentados e devido a restriçõe
 
 
 ![Gráfico genero categoria](grafico_genero_categoria.png)
+
+
+
+## Trabalhos futuros  
+
+- Analise do arquivo dados_duplicados
+- Verificação de itens duplicados que escaparam a limpeza de dados 
+- Cruzamento de dados avançadas
