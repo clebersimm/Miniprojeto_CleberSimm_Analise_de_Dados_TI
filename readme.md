@@ -42,6 +42,7 @@ Para executar o projeto são necessários:
 - criar virtual Environment: python3 -m venv Miniprojeto
 - ativar o virtual Environment source Miniprojeto/bin/activate
 - intalar o pandas: pip3 install pandas
+- instalar o matplotlib: pip3 install matplotlib
 - executar o script python: python3 main.py
 
 ### Sprint 1 
