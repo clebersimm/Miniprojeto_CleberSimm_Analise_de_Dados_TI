@@ -68,4 +68,5 @@ Sprint 2 (Transformação de Strings, Integer e Float e Datetime): Desenvolvimen
 - [ ] Funções para limpeza de dados
   - [x] Remoção de colunas inválidas - **remover_colunas_vazias**. Ao carregar os dados utilizando pandas, são apontadas 14 colunas mas a base só possui 10 colunas nas definições dedados. Removidas as colunas vazias.
   - [x] Remoção das registros duplicados - **verificar_e_remover_duplicatas**. Função que verifica os registros duplicados, após verificar se existem dados duplicados é realizada copia dos dados para futura análise e depois remoção dos dados.
-  - [ ] Verificação e remoção de dados nulos.
+  - [x] Verificação e remoção de dados nulos.
+  - [ ] Tranformações de dados inválidos ou vazios.
