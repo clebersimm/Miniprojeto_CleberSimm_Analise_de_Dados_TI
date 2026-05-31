@@ -211,57 +211,61 @@ def analise_agrupamento_genero_categoria_compra(dados):
     plt.legend(title='Gênero', labels=['Feminino (F)', 'Masculino (M)'])
     plt.tight_layout()
     plt.savefig('grafico_genero_categoria.png')
+    return agrupado
 
 def analise_agrupamento_itens_por_nota(dados):
     print('--> Agrupamento de itens por nota')
     itens_por_nota = dados.groupby('CO_ID').size().reset_index(name='Qtd_Itens')
-    print(itens_por_nota.describe())
+    return itens_por_nota
     
 def analise_agrupamento_top_produtos(dados):
     print('--> Agrupamento dos produtos mais comprados')
     top_produtos = dados.groupby('PR_NOME').size().reset_index(name='Quantidade')
-    top_10 = top_produtos.sort_values(by='Quantidade', ascending=True).head(10)
-    print('--> Top 10 produtos mais comprados')
-    print(top_10)
+    top_10 = top_produtos.sort_values(by='Quantidade', ascending=False).head(10)
+    return top_10
 
 
 def executar_tarefas_de_transformacao(dados):
-    print("\n-> Iniciando tarefas de transformação dos dados...")
+    resultado_transformacao = []
+    print('\n------Iniciando tarefas de transformação dos dados------')
     dados = transforma_campos_tipo_data(dados, 'DATA')
     dados, total_registros_invalidos = verificar_limpar_strings(dados, ['CL_GENERO', 'CL_SEG','PR_CAT','PR_NOME'])
+    resultado_transformacao.append(f"Total de registros com strings inválidas removidos: {total_registros_invalidos}")
     dados, total_registros_alterados = verificar_limpar_inteiros(dados, ['CO_ID','CL_ID','CL_EC','CL_FHL','PR_ID'])
-    print("\n-> Tarefas de transformação dos dados concluídas!")
-    print('-----Sumário da execução das tarefas de transformação dos dados-----')
-    print('-> Coluna "DATA" transformada para tipo datetime.')
-    print('-> Colunas "CL_GENERO", "CL_SEG", "PR_CAT" e "PR_NOME" limpas de espaços em branco e caracteres especiais, convertidas para maiúsculas.')
-    print(f'-> Total de registros removidos durante a verificação e limpeza de strings: {total_registros_invalidos}')
-    print('-> Colunas "CO_ID", "CL_ID", "CL_EC", "CL_FHL" e "PR_ID" verificadas e limpas de valores não numéricos, marcados como NaN quando encontrados.')
-    print(f'-> Total de registros alterados durante a verificação e limpeza de inteiros: {total_registros_alterados}')
-
-    print('--------------------------------------------------------------------')
-    return dados
+    resultado_transformacao.append(f"Total de registros com valores não numéricos marcados como NaN: {total_registros_alterados}")
+    print("\n------Tarefas de transformação dos dados concluídas!------")
+    return dados, resultado_transformacao
 
 def executar_tarefas_de_limpeza(dados):
+    resultado_limpeza = []
     print("\n-> Iniciando tarefas de limpeza dos dados...")
     dados, colunas_vazias = remover_colunas_vazias(dados)
+    resultado_limpeza.append(f"Colunas vazias removidas: {list(colunas_vazias)}")
     dados, duplicatas = verificar_e_remover_duplicatas(dados)
+    resultado_limpeza.append(f"Total de registros duplicados removidos: {duplicatas}")
     dados, total_nulos = verificar_e_tratar_valores_nulos(dados)
+    resultado_limpeza.append(f"Total de dados nulos após tratamento: {total_nulos}")
     # Verificação de campos específicos
-    # deixar para depois
+    # limpezas específicas de campos serão realizadas em outro momento. Necessário adquirir mais conhecimento sobre python
     #dados = verificar_e_tratar_campo_estado_civil(dados)
     #dados = verificar_e_tratar_valores_discrepantes(dados)
     print("\n-> Tarefas de limpeza dos dados concluídas!")
-    return dados
+    return dados, resultado_limpeza
 
 def executar_tarefas_analise():
+    resultado_analise = []
     print("\n-> Iniciando tarefas de análise dos dados...")
     dados_limpos = carregar_dados_de_csv(NOME_BASE_DADOS_LIMPA)
     resultado_analise_coluna_filhos = analise_coluna_numero_filhos(dados_limpos)
-    #print(f"\n-> Resultado da análise da coluna número de filhos: {resultado_analise_coluna_filhos}")
-    analise_agrupamento_genero_categoria_compra(dados_limpos)
-    analise_agrupamento_itens_por_nota(dados_limpos)
-    analise_agrupamento_top_produtos(dados_limpos)
+    resultado_analise.append(f"Resultado da análise da coluna número de filhos: {resultado_analise_coluna_filhos}")
+    resultado_genero_categoria_compra = analise_agrupamento_genero_categoria_compra(dados_limpos)
+    resultado_analise.append(f"Resultado do agrupamento de gênero e categoria de compra: {resultado_genero_categoria_compra}")
+    resultado_itens_por_nota = analise_agrupamento_itens_por_nota(dados_limpos)
+    resultado_analise.append(f"Resultado do agrupamento de itens por nota: {resultado_itens_por_nota}")
+    resultado_top_produtos = analise_agrupamento_top_produtos(dados_limpos)
+    resultado_analise.append(f"Resultado do agrupamento dos produtos mais comprados: {resultado_top_produtos}")
     print("\n-> Tarefas de análise dos dados concluídas!")
+    return resultado_analise,dados_limpos
 # Método de inicialização do programa
 # Utilizado para chamar as funções de carregamento de dados, transformação e limpeza
 def main():
@@ -270,15 +274,48 @@ def main():
     if dados is None:
         print("Falha ao carregar os dados.")
     else:
-        #print("-> Dados carregados com sucesso! Iniciando processos...")        
-        #apresentar_informacoes_dados(dados, "dados após o carregamento")
-        #dados = executar_tarefas_de_transformacao(dados)
-        #apresentar_informacoes_dados(dados, "dados após a transformação")
-        #dados = executar_tarefas_de_limpeza(dados)
-        #criar_arquivo_csv(NOME_BASE_DADOS_LIMPA, dados)
-        #del dados
-        executar_tarefas_analise()
-        #apresentar_informacoes_dados(dados, "dados após a limpeza")
+        print("-> Dados carregados com sucesso! Iniciando processos...")        
+        apresentar_informacoes_dados(dados, "dados após o carregamento")
+        dados, resultado_transformacao = executar_tarefas_de_transformacao(dados)
+        apresentar_informacoes_dados(dados, "dados após a transformação")
+        dados, resultado_limpeza = executar_tarefas_de_limpeza(dados)
+        apresentar_informacoes_dados(dados, "dados após a limpeza")
+        criar_arquivo_csv(NOME_BASE_DADOS_LIMPA, dados)
+        del dados
+        resultado_analise, dados_limpos = executar_tarefas_analise()
+        print('\n------Sumário da execução do programa------')
+        print('-> O programa realizou as seguintes etapas:')
+        print('1. Carregamento dos dados do arquivo CSV.')
+        print('2. Apresentação das informações dos dados após o carregamento.')
+        print('3. Transformação dos dados, incluindo:')
+        print('   - Transformação da coluna "DATA" para tipo datetime.')
+        print('   - Verificação e limpeza das colunas "CL_GENERO", "CL_SEG", "PR_CAT" e "PR_NOME" de espaços em branco e caracteres especiais, convertendo para maiúsculas.')
+        print('   - Verificação e limpeza das colunas "CO_ID", "CL_ID", "CL_EC", "CL_FHL" e "PR_ID" de valores não numéricos, marcando como NaN quando encontrados.')
+        print('4. Apresentação das informações dos dados após a transformação.')
+        print('5. Limpeza dos dados, incluindo:')
+        print('   - Remoção de colunas vazias.')
+        print('   - Verificação e remoção de registros duplicados, com backup dos dados duplicados para análise.')
+        print('   - Verificação e tratamento de valores nulos, substituindo strings vazias e valores "NULL" por NaN.')
+        print('6. Apresentação das informações dos dados após a limpeza.')
+        print('7. Criação de um novo arquivo CSV com os dados limpos.')
+        print('8. Análise dos dados limpos, incluindo:')
+        print('   - Análise da coluna número de filhos, calculando média, mediana, moda, mínimo, máximo e quartis.')
+        print('   - Agrupamento de gênero e categoria de compra, com visualização em gráfico de barras.')
+        print('   - Agrupamento de itens por nota, com estatísticas descritivas.')
+        print('   - Agrupamento dos produtos mais comprados, com identificação do top 10 produtos.')
+        print('-> O programa foi executado com sucesso, realizando todas as etapas de carregamento, transformação, limpeza e análise dos dados, fornecendo insights valiosos sobre o comportamento de compra dos clientes.')
+        print('\n--> Insights obtidos durante a execução do programa:')
+        print('-> Durante a transformação dos dados:')
+        for insight in resultado_transformacao:
+            print(f'   - {insight}')
+        print('-> Durante a limpeza dos dados:')
+        for insight in resultado_limpeza:
+            print(f'   - {insight}')
+        print('\n-> Resultado da limpeza dos dados limpos:')
+        apresentar_informacoes_dados(dados_limpos, "dados limpos para análise")
+        print('\n-> Resultado da análise dos dados limpos:')
+        for insight in resultado_analise:
+            print(f'   - {insight}')
 
 if __name__ == "__main__":
     main()
