@@ -56,6 +56,15 @@ Sprint 2 (Transformação de Strings, Integer e Float e Datetime): Desenvolvimen
 - Divisão de responsábilidades dentro do arquivo, criando funções para carregar os dados
 
 - [x] Criar função para carregar os dados do arquivo CSV, base de dados do sistema. 
+- [x] Transformação dos dados
+  - [x] Converter campo de data - Existe somente um campo do tipo de data, DATA, convertido para datetime
+  - [x] Limpeza e transformação de strings - remoção dos espaços em branco e normalizando para uppercase
+  - [x] Transformação dos inteiros - verificando se existe alguma dado nas colunas de inteiro que não seja número, se encontrado marcando como NaN
+  - [ ] ~~Transformação dos decimais~~ não existem números decimais. Tarefa não será realizada.
+
+
+## Sprint 3
+
 - [ ] Funções para limpeza de dados
   - [x] Remoção de colunas inválidas - **remover_colunas_vazias**. Ao carregar os dados utilizando pandas, são apontadas 14 colunas mas a base só possui 10 colunas nas definições dedados. Removidas as colunas vazias.
   - [x] Remoção das registros duplicados - **verificar_e_remover_duplicatas**. Função que verifica os registros duplicados, após verificar se existem dados duplicados é realizada copia dos dados para futura análise e depois remoção dos dados.
