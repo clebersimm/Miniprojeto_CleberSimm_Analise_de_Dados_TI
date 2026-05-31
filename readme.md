@@ -37,6 +37,13 @@ Siga as instruções do arquivo [Mini projeto](./mini_projeto.md).
 
 ## Desenvolvimento do projeto   
 
+Para executar o projeto são necessários: 
+- python 3.8 instalado
+- criar virtual Environment: python3 -m venv Miniprojeto
+- ativar o virtual Environment source Miniprojeto/bin/activate
+- intalar o pandas: pip3 install pandas
+- executar o script python: python3 main.py
+
 ### Sprint 1 
 
 Versão do Python utilizada: Python 3.8.10   
@@ -46,7 +53,7 @@ Sistema Operacional: Ubuntu 20.04
 
 - [x] Criar estrutura do projeto
     - [x] Pasta database
-    - [x] Pasta src
+    - [x] ~~Pasta src~~ colocado arquivo main.py no root
 - [x] Download do arquivo indicado no documento de especificações do projeto. https://www.kaggle.com/datasets/namespaiva/base-varejo/data    
 - [x] Descompactar a base de dados e normalizar o nome do arquivo de Base Varejo.csv para base_varejo.csv (arquivo .zip removido para não poluir o repositório)
 - [x] Criar Virtual Environment
