@@ -10,6 +10,25 @@ Mini-projeto avaliativo módulo 1 - semana 07
 Seguir as instruções do arquivo [Mini projeto](./mini_projeto.md).  
 
 
+## Dicionário de dados    
+
+- Data: data da compra.
+- CO_ID: Identificação do número da compra (número da nota fiscal).   
+- CL_ID: Identificação do cliente (número do cliente).   
+- CL_GENERO: Sexo biológico informado pelo cliente.  
+- CL_EC: Estado civil do cliente: 
+    - 1: Casado ou união estável
+    - 2: Divorciado
+    - 3: Seprado
+    - 4: Solteiro
+    - 5: Viúvo
+- CL_FHL: Número de filhos do cliente
+- CL_SEG: Segmentação econômica do cliente (Classe A, B ou C)
+- PR_ID: Código do produco (SKU) adquirido
+- PR_CAT: Categoria do produto adquirido
+- PR_NOME: Nome do produto adquirido
+
+
 ### Sprint 1 
 
 Versão do python utilizada: Python 3.8.10   
@@ -34,3 +53,10 @@ Sprint 1 (Importação dos dados): Realização da importação dos dados na pla
 
 Sprint 2 (Transformação de Strings, Integer e Float e Datetime): Desenvolvimento das funções de limpeza de texto, inteiros e decimais usando métodos e expressões regulares.
 
+- Divisão de responsábilidades dentro do arquivo, criando funções para carregar os dados
+
+- [x] Criar função para carregar os dados do arquivo CSV, base de dados do sistema. 
+- [ ] Funções para limpeza de dados
+  - [x] Remoção de colunas inválidas - **remover_colunas_vazias**. Ao carregar os dados utilizando pandas, são apontadas 14 colunas mas a base só possui 10 colunas nas definições dedados. Removidas as colunas vazias.
+  - [x] Remoção das registros duplicados - **verificar_e_remover_duplicatas**. Função que verifica os registros duplicados, após verificar se existem dados duplicados é realizada copia dos dados para futura análise e depois remoção dos dados.
+  - [ ] Verificação e remoção de dados nulos.
