@@ -174,12 +174,13 @@ Foram modificados métodos para retornar valores da base de dados e também resu
 
 ## Relatório e insights  
 
-Durante a fase de transformações e limpeza de dados, foi possível verificar que a base possuía diversos problemas que poderiam causar distorções nas métricas para o cliente. Dessa forma, a limpeza, a transformação e a normalização provaram ser essenciais para o desenvolvimento das atividades.   
+Realizando a fase de transformações e limpeza de dados, foi possível verificar que a base possuía diversos problemas que poderiam causar distorções nas métricas para o cliente. Dessa forma, a limpeza, a transformação e a normalização provaram ser essenciais para o desenvolvimento das atividades.   
+Na etapas de transformação e limpeza de dados foram verificados dados inválidos (strings com problemas, duplicados, etc..). Foi optado por remover estes dados pois devido ao tamanho da base de dados e a natureza foi avaliado que não geram impacto negativo nas análises. Também foi gerado um arquivo de backup dos dados duplicados para futuras verificações, pois existe a possibilidade que realmente a compra tenha sido feita duas ou mais vezes.
 
 Durante esse processo, foram detectados: 
 - Não ocorreram erros com os registros de valores numéricos.
 - Existência de colunas sem valores e sem nomenclatura, que foram removidas: ['Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
-- Registros duplicados em um total de: 96131
+- Registros duplicados em um total de: 96131 - escolhendo manter o primeiro registro.
 - Existência de registros inválidos na base, com o valor #N/D, em um total de 3650. Isso requer atenção, pois pode ser uma falha no sistema que grava os dados (PDV) ou no processo de extração.  
 
 **Principais insights**    
